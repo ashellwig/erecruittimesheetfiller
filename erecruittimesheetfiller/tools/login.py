@@ -136,7 +136,7 @@ def automated(login_url: str, username: str, password: str) -> None:
 
             timesheet_link = tbody_rows[i].find_elements(By.XPATH, "./*")
             timesheet_link[0].click()
-            sleep(10)
+            sleep(3)
             drv.switch_to.default_content()
             # pylint: disable=C0301
             timesheet_frame = drv.find_element(
@@ -171,7 +171,7 @@ def automated(login_url: str, username: str, password: str) -> None:
                     timesheet_close_button_xpath
             )
             timesheet_close_button.click()
-            sleep(10)
+            sleep(3)
             drv.switch_to.default_content()
             drv.switch_to.frame("dashboard")
         else:
@@ -181,6 +181,6 @@ def automated(login_url: str, username: str, password: str) -> None:
 
     # Close the browser.
     logger.debug("Closing the browser in 25 seconds.")
-    sleep(25)
+    sleep(3)
     logger.debug("Goodbye!")
     drv.quit()
