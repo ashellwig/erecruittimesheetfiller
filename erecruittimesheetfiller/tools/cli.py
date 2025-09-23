@@ -12,6 +12,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
+"""Collects the functions of the `erecruittimesheetfiller.tools` module to make
+usable by the click library for CLI use.
+"""
 
 import click
 
