@@ -1,0 +1,15 @@
+beautifulsoup4==4.13.5
+build==1.2.2.post1
+click==8.2.0
+keyring==25.6.0
+lxml==6.0.2
+pydocstyle==6.3.0
+pyinstaller==6.13.0
+pylint==3.3.7
+pyperclip==1.9.0
+pytest==8.3.5
+rich==14.0.0
+selenium==4.35.0
+tomlkit==0.13.2
+twine==6.1.0
+yapf==0.43.0

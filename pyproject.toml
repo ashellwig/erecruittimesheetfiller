@@ -1,0 +1,308 @@
+# Copyright (C) 2025 Ash Hellwig <ahellwig.dev@gmail.com>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
+# ---- BUILD SYSTEM SPECIFICATION ----
+[build-system]
+requires = ["setuptools >= 79.0.1"]
+build-backend = "setuptools.build_meta"
+
+# ---- PROJECT METADATA ----
+[project]
+name = "erecruittimesheetfiller"
+authors = [
+    { name = "Ash Hellwig", email = "ahellwig.dev@gmail.com" },
+]
+description = "Fills in timesheet for the eRecruit Platform used by Insight Global."
+readme = "README.md"
+license = "AGPL-3.0"
+requires-python = ">= 3.13"
+keywords = [
+    "selenium",
+    "browser",
+    "timesheet",
+    "beautifulsoup",
+    "autofill",
+    "auto-fill"
+]
+classifiers = [
+    "Development Status :: 1 - Planning",
+    "Environment :: Console",
+    "Environment :: Web Environment",
+    "Intended Audience :: Developers",
+    "Intended Audience :: End Users/Desktop",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: Microsoft :: Windows :: Windows 10",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Internet :: WWW/HTTP :: Browsers",
+]
+dependencies = [
+    "beautifulsoup4==4.13.5",
+    "build==1.2.2.post1",
+    "click==8.2.0",
+    "keyring==25.6.0",
+    "lxml==6.0.2",
+    "pydocstyle==6.3.0",
+    "pyinstaller==6.13.0",
+    "pylint==3.3.7",
+    "pyperclip==1.9.0",
+    "pytest==8.3.5",
+    "rich==14.0.0",
+    "selenium==4.35.0",
+    "tomlkit==0.13.2",
+    "twine==6.1.0",
+    "yapf==0.43.0"
+]
+license-files = ["LICENSE"]
+version = "0.0.1"
+
+[project.urls]
+Homepage = "https://github.com/ashellwig/erecruittimesheetfiller"
+Repository = "https://github.com/ashellwig/erecruittimesheetfiller.git"
+Issues = "https://github.com/ashellwig/erecruittimesheetfiller/issues"
+
+[project.scripts]
+erecruittimesheetfiller = "erecruittimesheetfiller.cli:cli"
+
+# ---- CONFIGURATION: setuptools ----
+[tool.setuptools]
+packages = ["erecruittimesheetfiller", "erecruittimesheetfiller.tools", "erecruittimesheetfiller.util"]
+include-package-data = true
+
+# ---- CONFIGURATION: pydocstyle ----
+[tool.pydocstyle]
+convention = "google"
+
+# ---- CONFIGURATION: yapf ----
+[tool.yapf]
+based_on_style = "pep8"
+indent_width = 4
+column_limit = 80
+spaces_before_comment = 2
+split_before_logical_operator = true
+split_before_arithmetic_operator = true
+allow_multiline_dictionary_keys = true
+split_before_first_argument = true
+split_complex_comprehension = true
+coalesce_brackets = true
+indent_dictionary_value = true
+allow_split_before_default_or_named_assigns = true
+allow_split_before_dict_value = true
+dedent_closing_brackets = true
+continuation_align_style = "valign-right"
+continuation_indent_width = 8
+split_arguments_when_comma_terminated = true
+split_before_named_assigns = true
+split_all_comma_separated_values = true
+split_all_top_level_comma_separated_values = false
+split_before_dot = true
+split_before_closing_bracket = true
+
+[tool.yapfignore]
+ignore_patterns = [
+    ".ycm_extra_conf.py"
+]
+
+# ---- CONFIGURATION: pylint ----
+[tool.pylint]
+
+[tool.pylint.main]
+ignore = "third_party"
+persistent = false
+jobs = 4
+unsafe-load-any-extension = false
+
+[tool.pylint.messages_control]
+disable = [
+    "R",
+    "abstract-method",
+    "apply-builtin",
+    "arguments-differ",
+    "attribute-defined-outside-init",
+    "backtick",
+    "bad-option-value",
+    "basestring-builtin",
+    "buffer-builtin",
+    "c-extension-no-member",
+    "consider-using-enumerate",
+    "cmp-builtin",
+    "cmp-method",
+    "coerce-builtin",
+    "coerce-method",
+    "delslice-method",
+    "div-method",
+    "eq-without-hash",
+    "execfile-builtin",
+    "file-builtin",
+    "filter-builtin-not-iterating",
+    "fixme",
+    "getslice-method",
+    "global-statement",
+    "hex-method",
+    "idiv-method",
+    "implicit-str-concat",
+    "import-error",
+    "import-self",
+    "import-star-module-level",
+    "input-builtin",
+    "intern-builtin",
+    "invalid-str-codec",
+    "locally-disabled",
+    "long-builtin",
+    "long-suffix",
+    "map-builtin-not-iterating",
+    "misplaced-comparison-constant",
+    "missing-function-docstring",
+    "metaclass-assignment",
+    "next-method-called",
+    "next-method-defined",
+    "no-absolute-import",
+    "no-init",
+    "no-member",
+    "no-name-in-module",
+    "no-self-use",
+    "nonzero-method",
+    "oct-method",
+    "old-division",
+    "old-ne-operator",
+    "old-octal-literal",
+    "old-raise-syntax",
+    "parameter-unpacking",
+    "print-statement",
+    "raising-string",
+    "range-builtin-not-iterating",
+    "raw_input-builtin",
+    "rdiv-method",
+    "reduce-builtin",
+    "relative-import",
+    "reload-builtin",
+    "round-builtin",
+    "setslice-method",
+    "signature-differs",
+    "standarderror-builtin",
+    "suppressed-message",
+    "sys-max-int",
+    "trailing-newlines",
+    "unichr-builtin",
+    "unicode-builtin",
+    "unnecessary-lambda-assignment",
+    "unnecessary-pass",
+    "unpacking-in-except",
+    "useless-else-on-loop",
+    "useless-suppression",
+    "using-cmp-argument",
+    "wrong-import-order",
+    "xrange-builtin",
+    "zip-builtin-not-iterating",
+]
+
+[tool.pylint.reports]
+output-format = "text"
+reports = false
+score = false
+evaluation = "10.0 - ((float(5 * error + warning + refactor + convention) / statement) * 10)"
+
+[tool.pylint.basic]
+good-names = ["main", "_"]
+include-naming-hint = false
+property-classes = [
+    "abc.abstractproperty",
+    "cached_property.cached_property",
+    "cached_property.threaded_cached_property",
+    "cached_property.cached_property_with_ttl",
+    "cached_property.threaded_cached_property_with_ttl"
+]
+function-rgx = "^(?:(?P<exempt>setUp|tearDown|setUpModule|tearDownModule)|(?P<camel_case>_?[A-Z][a-zA-Z0-9]*)|(?P<snake_case>_?[a-z][a-z0-9_]*))$"
+variable-rgx = "^[a-z][a-z0-9_]*$"
+const-rgx = "^(_?[A-Z][A-Z0-9_]*|__[a-z0-9_]+__|_?[a-z][a-z0-9_]*)$"
+attr-rgx = "^_{0,2}[a-z][a-z0-9_]*$"
+argument-rgx = "^[a-z][a-z0-9_]*$"
+class-attribute-rgx = "^(_?[A-Z][A-Z0-9_]*|__[a-z0-9_]+__|_?[a-z][a-z0-9_]*)$"
+inlinevar-rgx = "^[a-z][a-z0-9_]*$"
+class-rgx = "^_?[A-Z][a-zA-Z0-9]*$"
+module-rgx = "^(_?[a-z][a-z0-9_]*|__init__)$"
+method-rgx = "(?x)^(?:(?P<exempt>_[a-z0-9_]+__|runTest|setUp|tearDown|setUpTestCase|tearDownTestCase|setupSelf|tearDownClass|setUpClass|(test|assert)_*[A-Z0-9][a-zA-Z0-9_]*|next)|(?P<camel_case>_{0,2}[A-Z][a-zA-Z0-9_]*)|(?P<snake_case>_{0,2}[a-z][a-z0-9_]*))$"
+no-docstring-rgx = "(__.*__|main|test.*|.*test|.*Test)$"
+docstring-min-length = 12
+
+[tool.pylint.typecheck]
+contextmanager-decorators = [
+    "contextlib.contextmanager",
+    "contextlib2.contextmanager"
+]
+ignored-classes = [
+    "optparse.Values",
+    "thread._local",
+    "_thread._local"
+]
+
+[tool.pylint.format]
+max-line-length = 80
+ignore-long-lines = "(?x)(^\\s*(\\#\\ )?<?https?://\\S+>?$|^\\s*(from\\s+\\S+\\s+)?import\\s+.+$)"
+single-line-if-stmt = true
+max-module-lines = 99999
+indent-string='    '
+indent-after-paren = 4
+
+[tool.pylint.MISCELLANEOUS]
+notes = ["TODO"]
+
+[tool.pylint.STRING]
+check-quote-consistency = true
+
+[tool.pylint.VARIABLES]
+init-import = false
+dummy-variables-rgx = "^\\*{0,2}(_$|unused_|dummy_)"
+callbacks = ["cb_", "_cb"]
+redefining-builtins-modules = [
+    "six",
+    "six.moves",
+    "past.builtins",
+    "future.builtins",
+    "functools"
+]
+
+[tool.pylint.logging]
+logging-modules = [
+    "logging",
+    "absl.logging",
+    "tensorflow.io.logging"
+]
+
+[tool.pylint.similarities]
+min-similarity-lines = 4
+ignore-comments = true
+ignore-docstrings = true
+ignore-imports = false
+
+[tool.pylint.spelling]
+spelling-store-unknown-words = false
+
+[tool.pylint.imports]
+deprecated-modules = [
+    "regsub",
+    "TERMIOS",
+    "Bastion",
+    "rexec",
+    "sets"
+]
+known-third-party = ["enchant", "absl"]
+analyse-fallback-blocks = false
+
+[tool.pylint.classes]
+defining-attr-methods = ["__init__", "__new__", "setUp"]
+exclude-protected = ["_asdict", "_fields", "_replace", "_source", "_make"]
+valid-classmethod-first-arg = ["cls", "class_"]
+valid-metaclass-classmethod-first-arg = ["mcs"]
