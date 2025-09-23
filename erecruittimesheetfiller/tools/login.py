@@ -120,6 +120,43 @@ def automated(login_url: str, username: str, password: str) -> None:
         logger.debug("-" * 50)
 
         # Provide option for user to select each time sheet.
+        root = tk.Tk()
+        root.withdraw()
+
+        edit_decision = messagebox.askquestion(
+                f"Pay Period Ending {payperiod_end_date}",
+                "Would you like to edit this timesheet?"
+        )
+
+        if edit_decision == "yes":
+            logger.debug(
+                    "Now editing timesheet for pay period ending: %s",
+                    payperiod_end_date
+            )
+
+            timesheet_link = tbody_rows[i].find_elements(By.XPATH, "./*")
+            timesheet_link[0].click()
+            sleep(10)
+            drv.switch_to.default_content()
+            timesheet_frame = drv.find_element(
+                    By.XPATH,
+                    "//iframe[starts-with(@id, 'timesheet_manage_')]"
+            )
+            drv.switch_to.frame(timesheet_frame)
+
+            # pylint: disable=C0301
+            timesheet_close_button_xpath = \
+                "//*[@id=\"ctl00_ctl00_cphMain_cphBottomButtons_btnCommonClose_input\"]"
+            timesheet_close_button = drv.find_element(
+                    By.XPATH,
+                    timesheet_close_button_xpath
+            )
+            timesheet_close_button.click()
+            sleep(10)
+            drv.switch_to.default_content()
+            drv.switch_to.frame("dashboard")
+        else:
+            pass
 
     drv.switch_to.default_content()
 
