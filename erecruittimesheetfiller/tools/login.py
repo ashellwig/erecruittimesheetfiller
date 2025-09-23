@@ -138,12 +138,25 @@ def automated(login_url: str, username: str, password: str) -> None:
             timesheet_link[0].click()
             sleep(10)
             drv.switch_to.default_content()
+            # pylint: disable=C0301
             timesheet_frame = drv.find_element(
                     By.XPATH,
                     "//iframe[starts-with(@id, 'timesheet_manage_')]"
             )
             drv.switch_to.frame(timesheet_frame)
 
+            timesheet_tr_xpath = \
+                "//*[@id=\"ctl00_ctl00_cphMain_cphMain_tblTimeDays\"]/tbody/tr"
+            timesheet_tr = drv.find_element(By.XPATH, timesheet_tr_xpath)
+            timesheet_days = timesheet_tr.find_elements(By.XPATH, "./*")
+            logger.debug("-" * 50)
+            logger.debug(
+                    "Found %s elements under timesheet_tbody.",
+                    len(timesheet_days)
+            )
+            logger.debug("-" * 50)
+
+            # Close timesheet.
             # pylint: disable=C0301
             timesheet_close_button_xpath = \
                 "//*[@id=\"ctl00_ctl00_cphMain_cphBottomButtons_btnCommonClose_input\"]"
