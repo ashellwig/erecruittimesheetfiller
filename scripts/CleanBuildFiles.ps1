@@ -43,7 +43,8 @@ function Get-PyCacheTargets {
         ".\build",
         ".\dist",
         ".\erecruittimesheetfiller.egg-info",
-        ".\.pytest_cache"
+        ".\.pytest_cache",
+        ".\.venv\Lib\site-packages\erecruittimesheetfiller-0.0.1.dist-info"
     )
 
     # Combine the found caches with the fixed list and return the array.

@@ -1,0 +1,9 @@
+{
+    "recommendations": [
+        "eeyore.yapf",
+        "ms-python.pylint",
+        "ultram4rine.vscode-choosealicense",
+        "ymotongpoo.licenser",
+        "njpwerner.autodocstring"
+    ]
+}
