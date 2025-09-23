@@ -156,6 +156,12 @@ def automated(login_url: str, username: str, password: str) -> None:
             )
             logger.debug("-" * 50)
 
+            buttons = drv.find_elements(
+                    By.XPATH,
+                    "//button[contains(@id, 'btnadd')]"
+            )
+            logger.debug("Found %s buttons to add time.", len(buttons))
+
             # Close timesheet.
             # pylint: disable=C0301
             timesheet_close_button_xpath = \
