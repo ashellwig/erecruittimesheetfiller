@@ -15,7 +15,10 @@
 """Signs into eRecruit site to begin our attempt to automate this process."""
 
 import os
+
 from time import sleep
+import tkinter as tk
+from tkinter import messagebox
 
 from dotenv import load_dotenv
 from selenium import webdriver
@@ -62,15 +65,18 @@ def login_to_erecruit(driver: WebDriver, username: str, password: str) -> None:
 
 
 def automated(login_url: str, username: str, password: str) -> None:
+    # Setup logger.
     logger = setup_logger(log_file="login.log")
 
     # Get the environment variables.
     logger.info("Loading environment variables...")
     load_dotenv()
 
+    # Check if environment variables are available.
     if os.getenv("ERECRUIT_LOGIN_URL") is not None:
         logger.debug("Environment variables loaded!")
 
+    # Retrieve log in URL.
     if login_url is None:
         login_url = os.getenv("ERECRUIT_LOGIN_URL")
     else:
@@ -84,14 +90,41 @@ def automated(login_url: str, username: str, password: str) -> None:
     logger.debug("Visiting %s", login_url)
 
     drv.get(login_url)
-    drv.set_window_size(615, 1012)
+    drv.set_window_size(1366, 768)
 
     # Log in to the site.
     logger.debug("Running login_to_erecruit now...")
     login_to_erecruit(driver=drv, username=username, password=password)
 
+    # Select the oldest time sheet available.
+    # pylint: disable=C0301
+    drv.switch_to.frame("dashboard")
+    tbody_xpath = "//*[@id=\"ctl00_cphMain_RadDock1455_C_ctl00_gridTimesheets_ctl00\"]/tbody"
+    tbody_parent = drv.find_element(By.XPATH, tbody_xpath)
+    tbody_rows = tbody_parent.find_elements(By.XPATH, "./*")
+
+    # List available timesheets.
+    for i in range(0, len(tbody_rows)):
+        logger.debug("Count of available timesheets: %d", len(tbody_rows))
+        logger.debug("-" * 50)
+        payperiod_end_date = tbody_rows[i].find_elements(
+                By.CLASS_NAME,
+                "RadGridCellRightAlign"
+        )[1].text
+        logger.debug(
+                "Row %d/%d: %s",
+                i + 1,
+                len(tbody_rows),
+                payperiod_end_date
+        )
+        logger.debug("-" * 50)
+
+        # Provide option for user to select each time sheet.
+
+    drv.switch_to.default_content()
+
     # Close the browser.
-    logger.debug("Closing the browser in 15 seconds.")
-    sleep(15)
+    logger.debug("Closing the browser in 25 seconds.")
+    sleep(25)
     logger.debug("Goodbye!")
     drv.quit()
