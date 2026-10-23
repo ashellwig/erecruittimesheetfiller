@@ -17,15 +17,23 @@
 import os
 
 from time import sleep
-import tkinter as tk
-from tkinter import messagebox
 
 from dotenv import load_dotenv
 from selenium import webdriver
 from selenium.webdriver.chrome.webdriver import WebDriver
+from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 
+from erecruittimesheetfiller.tools.timesheet import fill_timesheet
 from erecruittimesheetfiller.util.logger import setup_logger
+from erecruittimesheetfiller.util.prompt import ask_yes_no
+from erecruittimesheetfiller.util.trace import (
+        dump_page_trace,
+        install_page_trace,
+        traced,
+)
 
 
 def login_to_erecruit(driver: WebDriver, username: str, password: str) -> None:
@@ -84,7 +92,8 @@ def automated(login_url: str, username: str, password: str) -> None:
 
     # Define webdriver.
     options = webdriver.ChromeOptions()
-    drv = webdriver.Chrome(options=options)
+    # Every Selenium action is logged; see `util.trace`.
+    drv = traced(webdriver.Chrome(options=options))
 
     # Visit the sign in page.
     logger.debug("Visiting %s", login_url)
@@ -98,7 +107,18 @@ def automated(login_url: str, username: str, password: str) -> None:
 
     # Select the oldest time sheet available.
     # pylint: disable=C0301
-    drv.switch_to.frame("dashboard")
+    try:
+        WebDriverWait(drv, 30).until(
+                EC.frame_to_be_available_and_switch_to_it("dashboard")
+        )
+    except TimeoutException:
+        logger.error(
+                "Dashboard never loaded; still at %s. Check the login "
+                "(bad credentials, MFA or a CAPTCHA?).",
+                drv.current_url.split("?")[0]
+        )
+        drv.quit()
+        raise
     tbody_xpath = "//*[@id=\"ctl00_cphMain_RadDock1455_C_ctl00_gridTimesheets_ctl00\"]/tbody"
     tbody_parent = drv.find_element(By.XPATH, tbody_xpath)
     tbody_rows = tbody_parent.find_elements(By.XPATH, "./*")
@@ -119,31 +139,61 @@ def automated(login_url: str, username: str, password: str) -> None:
         )
         logger.debug("-" * 50)
 
-        # Provide option for user to select each time sheet.
-        root = tk.Tk()
-        root.withdraw()
+        company = tbody_rows[i].find_element(By.TAG_NAME, "a").text
 
-        edit_decision = messagebox.askquestion(
+        # The only prompt: confirm which timesheet before anything is typed.
+        # It runs in its own process so no Tk window lingers during the fill.
+        edit_decision = ask_yes_no(
                 f"Pay Period Ending {payperiod_end_date}",
-                "Would you like to edit this timesheet?"
+                f"Fill this timesheet?\n\n{company}\n"
+                f"Pay period ending {payperiod_end_date}\n\n"
+                "Mon-Fri: 8:00 AM - 5:00 PM, lunch 12:00 PM - 1:00 PM\n"
+                "Each day is added; the timesheet is NOT submitted."
         )
 
-        if edit_decision == "yes":
+        if edit_decision:
             logger.debug(
                     "Now editing timesheet for pay period ending: %s",
                     payperiod_end_date
             )
 
             timesheet_link = tbody_rows[i].find_elements(By.XPATH, "./*")
-            timesheet_link[0].click()
-            sleep(3)
-            drv.switch_to.default_content()
-            # pylint: disable=C0301
-            timesheet_frame = drv.find_element(
-                    By.XPATH,
-                    "//iframe[starts-with(@id, 'timesheet_manage_')]"
-            )
+            clicked_html = timesheet_link[0].get_attribute("outerHTML")
+            # Click the <a> itself; the <td> is wider than the link.
+            timesheet_link[0].find_element(By.TAG_NAME, "a").click()
+            frame_xpath = "//iframe[starts-with(@id, 'timesheet_manage_')]"
+
+            def find_timesheet_frame(driver: WebDriver, xpath=frame_xpath):
+                """Looks at the top level, then inside the dashboard frame."""
+                for in_dashboard in (False, True):
+                    driver.switch_to.default_content()
+                    if in_dashboard:
+                        driver.switch_to.frame("dashboard")
+                    found = driver.find_elements(By.XPATH, xpath)
+                    if found:
+                        return found[0]
+                return False
+
+            try:
+                timesheet_frame = WebDriverWait(drv, 30).until(
+                        find_timesheet_frame
+                )
+            except TimeoutException:
+                drv.save_screenshot("timesheet_debug.png")
+                logger.error("Clicked cell: %s", clicked_html)
+                for in_dashboard in (False, True):
+                    drv.switch_to.default_content()
+                    if in_dashboard:
+                        drv.switch_to.frame("dashboard")
+                    logger.error(
+                            "iframes (dashboard=%s): %s",
+                            in_dashboard,
+                            [f.get_attribute("id")
+                             for f in drv.find_elements(By.TAG_NAME, "iframe")]
+                    )
+                raise
             drv.switch_to.frame(timesheet_frame)
+            install_page_trace(drv)
 
             timesheet_tr_xpath = \
                 "//*[@id=\"ctl00_ctl00_cphMain_cphMain_tblTimeDays\"]/tbody/tr"
@@ -156,11 +206,13 @@ def automated(login_url: str, username: str, password: str) -> None:
             )
             logger.debug("-" * 50)
 
-            buttons = drv.find_elements(
-                    By.XPATH,
-                    "//button[contains(@id, 'btnadd')]"
+            # Fills and confirms ("Add") Mon-Fri. Submit is left to you.
+            fill_timesheet(
+                    drv, dry_run=False, expected_days=len(timesheet_days)
             )
-            logger.debug("Found %s buttons to add time.", len(buttons))
+            logger.debug("Days added; not submitted. Closing in 15 seconds.")
+            sleep(15)
+            dump_page_trace(drv, "review")
 
             # Close timesheet.
             # pylint: disable=C0301

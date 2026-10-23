@@ -16,7 +16,7 @@
         "editor.tabSize": 4
     },
     "python.analysis.typeCheckingMode": "standard",
-    "python.defaultInterpreterPath": "C:\\Users\\dl026f\\source\\repos\\github.com\\ashellwig\\erecruittimesheetfiller\\.venv\\Scripts\\python.exe",
+    "python.defaultInterpreterPath": "/Users/ashton.hellwig/source/repos/github.com/ashellwig/erecruittimesheetfiller/.venv/bin/python",
     //// Linting
     "pylint.enabled": true,
     "pylint.args": ["--rcfile=pyproject.toml"],
@@ -39,4 +39,5 @@
     "licenser.projectName": "erecruittimesheetfiller",
     "license.year": "2025",
     "licenser.useSPDXLicenseFormat": false,
+    "python.terminal.useEnvFile": true,
 }
